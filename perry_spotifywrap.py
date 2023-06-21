@@ -17,7 +17,7 @@ st.title("Bar Chart Visualization")
 
 # Create sample data for the bar charts
 
-df = pd.read_json('StreamingHistory0_NEW.JSON')
+df = pd.read_json('StreamingHistory0_NEW.json')
 
 
 col1, col2  = st.columns(2)
