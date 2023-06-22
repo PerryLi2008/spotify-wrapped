@@ -8,8 +8,6 @@ Created on Tue Jun 13 17:03:16 2023
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import plotly.express as px
-
 
 st.set_page_config(layout="wide")
 
