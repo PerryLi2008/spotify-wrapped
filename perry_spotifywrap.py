@@ -27,7 +27,7 @@ with col1:
     st.subheader("Top Artists")
     # num_artists_listened = df['artistName'].value_counts().reset_index()
     # num_artists_listened = num_artists_listened.rename(columns={'index': 'Artist', 'artistName': 'Count'}).head(10)
-    # fig1, ax1 = plt.subplots()
+    fig1, ax1 = plt.subplots()
     # ax1.barh( num_artists_listened['Artist'], num_artists_listened['Count'])
     plt.xlabel('# of Times Played')
     plt.ylabel('Artists')
