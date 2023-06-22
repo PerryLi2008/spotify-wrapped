@@ -26,26 +26,26 @@ with col1:
     st.header("Top Artist")
 
     num_artists_listened = df['artistName'].value_counts().reset_index()
-    # num_artists_listened.rename(columns={'index': 'Artist', 'artistName': 'Count'}, inplace=True)
-    top_artist = num_artists_listened.loc[0, ['index']].iloc[0]
-    artist_count = num_artists_listened.loc[0, ['artistName']].iloc[0]
-    # artist_col1 = top_artist.iloc[0]
-    st.subheader(top_artist)
-    st.image("./images/" + top_artist + '.jpg')
-    st.text("Your top artist was " + top_artist)
-    st.text("You listened " + str(artist_count) + " times of his song this year.")
+    # # num_artists_listened.rename(columns={'index': 'Artist', 'artistName': 'Count'}, inplace=True)
+    # top_artist = num_artists_listened.loc[0, ['index']].iloc[0]
+    # artist_count = num_artists_listened.loc[0, ['artistName']].iloc[0]
+    # # artist_col1 = top_artist.iloc[0]
+    # st.subheader(top_artist)
+    # st.image("./images/" + top_artist + '.jpg')
+    # st.text("Your top artist was " + top_artist)
+    # st.text("You listened " + str(artist_count) + " times of his song this year.")
     
    
 # Create the second bar chart
 with col2: 
     st.header("Top Song")
     num_songs_listened = df['trackName'].value_counts().reset_index()
-    top_song = num_songs_listened.loc[0,['index']].iloc[0]
-    song_counts = num_songs_listened.loc[0,['trackName']].iloc[0]
-    st.subheader(top_song)
-    st.image("./images/" + top_song + '.jpg')
-    st.text("Your top song was " + top_song + " by " + top_artist)
-    st.text("You played it " + str(song_counts) + " times.")
+    # top_song = num_songs_listened.loc[0,['index']].iloc[0]
+    # song_counts = num_songs_listened.loc[0,['trackName']].iloc[0]
+    # st.subheader(top_song)
+    # st.image("./images/" + top_song + '.jpg')
+    # st.text("Your top song was " + top_song + " by " + top_artist)
+    # st.text("You played it " + str(song_counts) + " times.")
 
 st.title("Lower section")
 
