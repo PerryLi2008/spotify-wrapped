@@ -37,9 +37,9 @@ with col1:
 # Create the second bar chart
 with col2: 
     st.subheader("Top Songs")
-    num_songs_listened = df['trackName'].value_counts().reset_index().rename(columns={'index': 'Track', 'trackName': 'Count'}).head(25)
+    # num_songs_listened = df['trackName'].value_counts().reset_index().rename(columns={'index': 'Track', 'trackName': 'Count'}).head(25)
     fig2, ax2 = plt.subplots()
-    ax2.barh(num_songs_listened['Track'], num_songs_listened['Count'])
+    # ax2.barh(num_songs_listened['Track'], num_songs_listened['Count'])
     plt.xlabel('# of Times Played')
     plt.ylabel('Songs')
     plt.title('Top Songs')
