@@ -55,6 +55,7 @@ col3, col4  = st.columns(2)
 with col3: 
     st.subheader("Top Artists")
     # num_artists_listened = df['artistName'].value_counts().reset_index()
+    num_artists_listened = pd.DataFrame(num_artists_listened)
     num_artists_listened = num_artists_listened.rename(columns={'index': 'Artist', 'artistName': 'Count'}).head(10)
     fig1, ax1 = plt.subplots()
     ax1.barh( num_artists_listened['Artist'], num_artists_listened['Count'])
@@ -68,6 +69,7 @@ with col3:
 with col4: 
     st.subheader("Top Songs")
     # num_songs_listened = df['trackName'].value_counts().reset_index().rename(columns={'index': 'Track', 'trackName': 'Count'}).head(25)
+    num_songs_listened = pd.DataFrame(num_songs_listened)
     num_songs_listened = num_songs_listened.rename(columns={'index': 'Track', 'trackName': 'Count'}).head(25)
     fig2, ax2 = plt.subplots()
     ax2.barh(num_songs_listened['Track'], num_songs_listened['Count'])
