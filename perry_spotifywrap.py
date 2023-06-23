@@ -47,7 +47,7 @@ with col1:
     # artist_count = num_artists_listened.loc[0, ['artistName']].iloc[0]
     # # artist_col1 = top_artist.iloc[0]
     st.subheader(top_artist)
-    st.image("./images/" + top_artist + '.jpg')
+    st.image("./images/" + top_artist + ' new.jpg')
     st.text("Your top artist was " + top_artist)
     st.text("You listened " + str(artist_count) + " times of his song this year.")
     
@@ -61,7 +61,7 @@ with col2:
     # top_song = num_songs_listened.loc[0,['index']].iloc[0]
     # song_counts = num_songs_listened.loc[0,['trackName']].iloc[0]
     st.subheader(top_song)
-    st.image("./images/" + top_song + '.jpg')
+    st.image("./images/" + top_song + 'new.jpg')
     st.text("Your top song was " + top_song + " by " + top_artist)
     st.text("You played it " + str(song_count) + " times.")
 
