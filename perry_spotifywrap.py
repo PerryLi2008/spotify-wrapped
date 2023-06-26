@@ -1,35 +1,34 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 13 17:03:16 2023
-
-@author: avery
-"""
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
 from PIL import Image
 
-st.set_page_config(layout="wide")
+# st.set_page_config(layout="wide")
 
-# Set the title of the app
-st.title("2022 Spotify Wrapped")
+# # Set the title of the app
+# st.title("2022 Spotify Wrapped")
 
 
 # Create sample data for the bar charts
-df = pd.read_json('StreamingHistory0_NEW.json')
+df = pd.read_json('./data/StreamingHistory0_final.json')
 
 # Get Top artists
-num_artists_listened = df['artistName'].value_counts()
-num_artists_listened = pd.DataFrame(num_artists_listened)
-num_artists_listened.reset_index(names='Artist', inplace=True)
-num_artists_listened = num_artists_listened.head(10)
+num_artists_listened = df['artistName'].value_counts().to_frame()
+num_artists_listened = num_artists_listened.reset_index(names='Artist').head(10)
 
 # Get Top songs
-num_songs_listened = df['trackName'].value_counts()
-num_songs_listened = pd.DataFrame(num_songs_listened)
-num_songs_listened.reset_index(names='Track', inplace=True)
-num_songs_listened = num_songs_listened.head(20)
+num_songs_listened = df['trackName'].value_counts().to_frame()
+num_songs_listened = num_songs_listened.reset_index(names='Track').head(20)
+
+# Get Top genres
+num_genres_listened = df['genre'].value_counts().to_frame()
+num_genres_listened = num_genres_listened.reset_index(names='Genre').iloc[1:11]
+
+# Get hour
+df['datetime'] = pd.to_datetime(df['endTime'])
+df['Hour'] = df['datetime'].dt.hour
 
 # Plot Top artist and Top Song
 col1, col2 = st.columns(2)
@@ -41,11 +40,13 @@ with col1:
     artist_count = num_artists_listened.loc[0, 'count']
    
     st.subheader(top_artist)
-    image1 = Image.open("./images/" + top_artist + " new.jpg")
+    # image1 = Image.open("./images/" + top_artist + " new.jpg")
+    image1 = Image.open(f"./images/{top_artist} new.jpg")
     image1 = image1.resize((400, 200))      # Set the desired size
     st.image(image1, use_column_width=True)
     st.text("Your top artist was " + top_artist)
-    st.text("You listened " + str(artist_count) + " times of his song this year.")
+    # st.text("You listened " + str(artist_count) + " times of his song this year.")
+    st.text(f"You listened {str(artist_count)} times of his song this year.")
     
    
 # Create the second bar chart
@@ -55,11 +56,11 @@ with col2:
     song_count = num_songs_listened.loc[0, 'count']
 
     st.subheader(top_song)
-    image2 = Image.open("./images/" + top_song + " new.jpg")
+    image2 = Image.open(f"./images/{top_song} new.jpg")
     image2 = image2.resize((400, 200))      # Set the desired size                    
     st.image(image2, use_column_width=True)
-    st.text("Your top song was " + top_song + " by " + top_artist)
-    st.text("You played it " + str(song_count) + " times.")
+    st.text(f"Your top song was {top_song} by {top_artist}")
+    st.text(f"You played it {str(song_count)} times.")
 
 # Plot Top artists list and Top songs list
 col3, col4  = st.columns(2)
@@ -67,7 +68,8 @@ col3, col4  = st.columns(2)
 # Create the first bar chart
 with col3: 
     st.header("Top Artists")
-    
+    num_artists_listened = num_artists_listened.sort_values(by='count')
+
     fig1, ax1 = plt.subplots()
     ax1.barh(num_artists_listened['Artist'], num_artists_listened['count'])
     plt.xlabel('# of Times Played')
@@ -79,6 +81,7 @@ with col3:
 # Create the second bar chart
 with col4: 
     st.header("Top Songs")
+    num_songs_listened = num_songs_listened.sort_values(by='count')
 
     fig2, ax2 = plt.subplots()
     ax2.barh(num_songs_listened['Track'], num_songs_listened['count'])
@@ -86,3 +89,75 @@ with col4:
     plt.ylabel('Songs')
     plt.title('Top Songs')
     st.pyplot(fig2)
+
+# Plot Listening by Time of Day and Track Length Distribution
+col5, col6  = st.columns(2)
+
+# Create radar chart for Listening by Time of Day
+with col5:
+    # Plot count by hour
+    num_listens_by_hour = df['Hour'].value_counts().to_frame().reset_index()
+    num_listens_by_hour = num_listens_by_hour.sort_values(by='Hour')
+    fig_line = px.area(num_listens_by_hour, x='Hour', y='count')
+
+    def angle2hr(angle):
+        return (((angle - 15) % 360) + 15) / 15
+
+    def hr2angle(hr):
+        return (hr * 15) % 360
+
+    def hr_str(hr):
+        # Normalize hr to be between 1 and 12
+        hr_str = str(((hr-1) % 12) + 1)
+        suffix = ' AM' if (hr % 24) < 12 else ' PM'
+        return hr_str + suffix
+
+    thetas = [hr2angle(i) for i in num_listens_by_hour['Hour']]
+    data = [
+        go.Scatterpolar(
+            r = num_listens_by_hour['count'],
+            theta = thetas,
+            mode = 'lines',
+            marker = dict(
+                color = 'peru'
+            )
+        )
+    ]
+
+    layout = go.Layout(
+        showlegend = False,
+        polar_radialaxis_gridcolor="#ffffff", 
+        polar_angularaxis_gridcolor="#ffffff"
+    )
+
+    layout.polar.angularaxis.direction = 'clockwise'
+    layout.polar.angularaxis.tickvals = [hr2angle(hr) for hr in range(24)]
+    layout.polar.angularaxis.ticktext = [hr_str(hr) for hr in range(24)]
+    fig_radar = go.FigureWidget(data=data, layout=layout)
+
+    st.header("Listening by Time of Day")
+    st.plotly_chart(fig_radar, use_container_width=True)
+
+# Create bar chart for minutes played
+with col6:
+    st.header("Track Length Distribution")
+    df['minutesPlayed'] = df['msPlayed']/1000/60
+
+    # Example of create new column based on calculation on another column
+    # df['podcast'] = 0
+    # df['podcast'][df['minutesPlayed'] > 6] = 1
+
+    fig_histogram = px.histogram(df, x='minutesPlayed')
+    st.plotly_chart(fig_histogram)
+
+# Plot Top genres
+st.header("Top Genres")
+
+num_genres_listened = num_genres_listened.sort_values(by='count')
+
+fig3, ax3 = plt.subplots()
+ax3.barh(num_genres_listened['Genre'], num_genres_listened['count'])
+plt.xlabel('# of Times Played')
+plt.ylabel('Genres')
+# plt.title('Top Genres')
+st.pyplot(fig3)
