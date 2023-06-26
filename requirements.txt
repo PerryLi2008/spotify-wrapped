@@ -4,5 +4,4 @@ matplotlib
 plotly
 Pillow
 ipywidgets
-urllib
 spotipy
