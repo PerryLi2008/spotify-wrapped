@@ -3,16 +3,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
+from urllib.request import urlopen
 from PIL import Image
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 
-# st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
-# # Set the title of the app
-# st.title("2022 Spotify Wrapped")
-
+# Set the title of the app
+st.title("2022 Spotify Wrapped")
 
 # Create sample data for the bar charts
 df = pd.read_json('./data/StreamingHistory0_final.json')
+
+# Connect to Spotify API
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
 # Get Top artists
 num_artists_listened = df['artistName'].value_counts().to_frame()
@@ -40,15 +45,17 @@ with col1:
     artist_count = num_artists_listened.loc[0, 'count']
    
     st.subheader(top_artist)
-    # image1 = Image.open("./images/" + top_artist + " new.jpg")
-    image1 = Image.open(f"./images/{top_artist} new.jpg")
-    image1 = image1.resize((400, 200))      # Set the desired size
-    st.image(image1, use_column_width=True)
+    
+    # Get url of artist's image
+    # image1 = Image.open(f"./images/{top_artist} new.jpg")
+    results = spotify.search(top_artist, type='artist')
+    url = results['artists']['items'][0]['images'][0]['url']
+    image1 = Image.open(urlopen(url))
+    image1 = image1.resize((300, 300))
+    st.image(image1, use_column_width=False)
     st.text("Your top artist was " + top_artist)
-    # st.text("You listened " + str(artist_count) + " times of his song this year.")
     st.text(f"You listened {str(artist_count)} times of his song this year.")
     
-   
 # Create the second bar chart
 with col2: 
     st.header("Top Song")
@@ -56,9 +63,14 @@ with col2:
     song_count = num_songs_listened.loc[0, 'count']
 
     st.subheader(top_song)
-    image2 = Image.open(f"./images/{top_song} new.jpg")
-    image2 = image2.resize((400, 200))      # Set the desired size                    
-    st.image(image2, use_column_width=True)
+
+    # Get url of album's image
+    # image2 = Image.open(f"./images/{top_song} new.jpg")
+    results = spotify.search(top_song, type='track')
+    url = results['tracks']['items'][0]['album']['images'][0]['url']
+    image2 = Image.open(urlopen(url))
+    image2 = image2.resize((300, 300))
+    st.image(image2, use_column_width=False)
     st.text(f"Your top song was {top_song} by {top_artist}")
     st.text(f"You played it {str(song_count)} times.")
 
@@ -152,7 +164,6 @@ with col6:
 
 # Plot Top genres
 st.header("Top Genres")
-
 num_genres_listened = num_genres_listened.sort_values(by='count')
 
 fig3, ax3 = plt.subplots()
