@@ -189,7 +189,7 @@ with col7:
 
 # # Create Most Danceability list
 with col8:
-    st.subheader("Most Danceability list")
+    st.subheader("Songs with Most Danceability")
     most_danceability = most_danceability.sort_values(by='danceability', ascending=False)
     most_danceability = most_danceability.head(10).reset_index(drop=True)
     
