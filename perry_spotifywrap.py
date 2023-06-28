@@ -63,8 +63,8 @@ with col1:
     # image1 = Image.open(urlopen(url))
     image1 = image1.resize((300, 300))
     st.image(image1, use_column_width=False)
-    st.text("Your top artist was \n" + top_artist)
-    st.text(f"You listened {str(artist_count)} times of his song this year.")
+    st.text(f"Your top artist was \n{top_artist}.")
+    st.text(f"You listened {str(artist_count)} times of his song.")
     
 # Create the second bar chart
 with col2: 
@@ -81,8 +81,8 @@ with col2:
     # image2 = Image.open(urlopen(url))
     image2 = image2.resize((300, 300))
     st.image(image2, use_column_width=False)
-    st.text(f"Your top song was {top_song} by \n{top_artist}")
-    st.text(f"You played it {str(song_count)} times.")
+    st.text(f"Your top song was {top_song}.\n")
+    st.text(f"You played it {str(song_count)} times this year.")
 
 # Plot Top artists list and Top songs list
 col3, col4  = st.columns(2)
