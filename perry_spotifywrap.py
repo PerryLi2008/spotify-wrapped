@@ -13,14 +13,13 @@ from datetime import timedelta, datetime
 st.set_page_config(layout="wide")
 
 # Set the title of the app
-st.title("Spotify Wrapped for Perry")
-st.write("October 2022 - June 2023")
-# color_purple = st.color_picker('purple', '#6806bf', label_visibility='hidden')
-# color_orange = st.color_picker('orange', '#f78b00')
-# color_yellow = st.color_picker('yellow', '#f2ff2b')
-# color_pink = st.color_picker('pink', '#ee74c5')
+image_title = Image.open("./images/Title.jpg")
+image_title = image_title.resize((600, 300))
+st.image(image_title, use_column_width=False)
+st.text("")
 
-# st.header(""":pink[ Spotify ] :orange[Wrapped] :yellow[for] :purple[Perry]""")
+# st.title("Spotify Wrapped for Perry")
+# st.write("October 2022 - June 2023")
 
 # Create sample data for the bar charts
 df = pd.read_json('./data/StreamingHistory0 final.json')
@@ -32,9 +31,21 @@ spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 num_artists_listened = df['artistName'].value_counts().to_frame()
 num_artists_listened = num_artists_listened.reset_index(names='Artist').head(10)
 
+# Get most streamed artists
+num_artists_streamed = df.groupby('artistName')['msPlayed'].sum().to_frame()
+num_artists_streamed = num_artists_streamed.reset_index(names='Artist')
+num_artists_streamed['minutesPlayed'] = 0.0
+num_artists_streamed['minutesPlayed'] = num_artists_streamed['msPlayed']/1000/60
+
 # Get Top songs
 num_songs_listened = df['trackName'].value_counts().to_frame()
-num_songs_listened = num_songs_listened.reset_index(names='Track').head(15)
+num_songs_listened = num_songs_listened.reset_index(names='Track').head(10)
+
+# Get most streamed songs
+num_songs_streamed = df.groupby('trackName')['msPlayed'].sum().to_frame()
+num_songs_streamed = num_songs_streamed.reset_index(names='Track')
+num_songs_streamed['minutesPlayed'] = 0.0
+num_songs_streamed['minutesPlayed'] = num_songs_streamed['msPlayed']/1000/60
 
 # Get Top genres
 num_genres_listened = df['genre'].value_counts().to_frame()
@@ -75,6 +86,7 @@ with col1:
     st.image(image1, use_column_width=False)
     st.text(f"Your top artist was \n{top_artist}.")
     st.text(f"You listened {str(artist_count)} times of his song.")
+    st.text("")
     
 # Create the second bar chart
 with col2: 
@@ -93,11 +105,13 @@ with col2:
     st.image(image2, use_column_width=False)
     st.text(f"Your top song was {top_song}.\n")
     st.text(f"You played it {str(song_count)} times this year.")
+    st.text("")
+
 
 # Plot Top artists list and Top songs list
 col3, col4  = st.columns(2)
 
-# Create the first bar chart
+# Create bar chart for top artists
 with col3: 
     st.subheader("Top Artists")
     num_artists_listened = num_artists_listened.sort_values('count')
@@ -128,23 +142,52 @@ with col3:
 
     fig_bar1.update_layout(
         xaxis_title='# of Times Played',
-        yaxis_title='Artists'
+        yaxis_title='Artists',
+        margin=dict(l=10, r=10, t=50, b=130)
     )
 
     st.plotly_chart(fig_bar1, use_container_width=True)
 
-# Create the second bar chart
-with col4: 
-    st.subheader("Top Songs")
-    num_songs_listened = num_songs_listened.sort_values(by='count')
-    num_songs_listened['Track'] = num_songs_listened['Track'].str.slice(0,30)
+# Create bar chart for most streamed artists
+with col4:
+    st.subheader("Most Streamed Artists")
+    num_artists_streamed = num_artists_streamed.sort_values('minutesPlayed').tail(10)
+    num_artists_streamed['minutesPlayed'] = num_artists_streamed['minutesPlayed'].apply(int)
+    # num_artists_streamed = num_artists_streamed.head(10)
 
-    # fig2, ax2 = plt.subplots()
-    # ax2.barh(num_songs_listened['Track'], num_songs_listened['count'])
-    # plt.xlabel('# of Times Played')
-    # plt.ylabel('Songs')
-    # plt.title('Top Songs')
-    # st.pyplot(fig2)
+    # Create a color gradient based on the size of x-axis values
+    colorscale = [[0, '#8b08fd'], [1, '#6806bd']]
+    hover_template = "User streamed %{x} minutes of %{y}'s songs"
+
+    fig_bar1_2 = go.Figure()    
+    fig_bar1_2.add_trace(go.Bar(
+        x=num_artists_streamed['minutesPlayed'],
+        y=num_artists_streamed['Artist'],
+        orientation='h',
+        marker=dict(
+        color=num_artists_streamed['minutesPlayed'],
+        colorscale=colorscale,
+        showscale=False
+        ),
+        hovertemplate=hover_template
+    ))
+
+    fig_bar1_2.update_layout(
+        xaxis_title='Minutes Streamed',
+        yaxis_title='Artists',
+        margin=dict(l=10, r=10, t=50, b=130)
+    )
+
+    st.plotly_chart(fig_bar1_2, use_container_width=True)
+
+# Plot Top songs and most streamed songs list
+col5, col6  = st.columns(2)
+
+# Bar chart for Top songs
+with col5: 
+    st.subheader("Top Songs")
+    num_songs_listened = num_songs_listened.sort_values('count')
+    num_songs_listened['Track'] = num_songs_listened['Track'].str.slice(0,30)
 
     # Create a color gradient based on the size of x-axis values
     colorscale = [[0, '#fc9b39'], [1, '#bc732b']]
@@ -156,25 +199,58 @@ with col4:
         y=num_songs_listened['Track'],
         orientation='h',
         marker=dict(
-        color=num_songs_listened['count'],
-        colorscale=colorscale,
-        showscale=False
+            color=num_songs_listened['count'],
+            colorscale=colorscale,
+            showscale=False
         ),
         hovertemplate=hover_template
     ))
 
     fig_bar2.update_layout(
         xaxis_title='# of Times Played',
-        yaxis_title='Songs'
+        yaxis_title='Songs',
+        margin=dict(l=10, r=10, t=50, b=130)
     )
 
     st.plotly_chart(fig_bar2, use_container_width=True)
 
+# Bar chart for most streamed songs
+with col6: 
+    st.subheader("Most Streamed Songs")
+    num_songs_streamed = num_songs_streamed.sort_values('minutesPlayed').tail(10)
+    num_songs_streamed['minutesPlayed'] = num_songs_streamed['minutesPlayed'].apply(int)
+    num_songs_streamed['Track'] = num_songs_streamed['Track'].str.slice(0,30)
+
+    # Create a color gradient based on the size of x-axis values
+    colorscale = [[0, '#fc9b39'], [1, '#bc732b']]
+    hover_template = "User streamed %{x} minutes of %{y}"
+
+    fig_bar2_2 = go.Figure()    
+    fig_bar2_2.add_trace(go.Bar(
+        x=num_songs_streamed['minutesPlayed'],
+        y=num_songs_streamed['Track'],
+        orientation='h',
+        marker=dict(
+            color=num_songs_streamed['minutesPlayed'],
+            colorscale=colorscale,
+            showscale=False
+        ),
+        hovertemplate=hover_template
+    ))
+
+    fig_bar2_2.update_layout(
+        xaxis_title='Minutes Streamed',
+        yaxis_title='Songs',
+        margin=dict(l=10, r=10, t=50, b=130)
+    )
+
+    st.plotly_chart(fig_bar2_2, use_container_width=True)
+
 # Plot Listening by Time of Day and Track Length Distribution
-col5, col6  = st.columns(2)
+col7, col8  = st.columns(2)
 
 # Create radar chart for Listening by Time of Day
-with col5:
+with col7:
     # Plot count by hour
     num_listens_by_hour = df['Hour'].value_counts().to_frame().reset_index()
     num_listens_by_hour = num_listens_by_hour.sort_values(by='Hour')
@@ -222,7 +298,7 @@ with col5:
     st.plotly_chart(fig_radar, use_container_width=True)
 
 # Create bar chart for minutes played
-with col6:
+with col8:
     st.subheader("Track Length Distribution")
     df['minutesPlayed'] = df['msPlayed']/1000/60
 
@@ -250,18 +326,19 @@ with col6:
 
     fig_histogram.update_layout(
         xaxis_title='Track Minutes Played',
-        yaxis_title='Counts'
+        yaxis_title='Counts',
+        # margin=dict(l=20, r=20, t=20, b=20)
     )
 
     st.plotly_chart(fig_histogram)
 
 # Plot Top Genres and Most Danceability
-col7, col8  = st.columns(2)
+col9, col10  = st.columns(2)
 
 # # Create Top Genres list
-with col7:
+with col9:
     st.subheader("Top Genres")
-    num_genres_listened = num_genres_listened.sort_values(by='count')
+    num_genres_listened = num_genres_listened.sort_values('count')
 
     # fig3, ax3 = plt.subplots()
     # ax3.barh(num_genres_listened['Genre'], num_genres_listened['count'])
@@ -288,15 +365,16 @@ with col7:
 
     fig_bar3.update_layout(
         xaxis_title='# of Times Played',
-        yaxis_title='Genres'
+        yaxis_title='Genres',
+        margin=dict(l=10, r=10, t=50, b=130)
     )
 
     st.plotly_chart(fig_bar3, use_container_width=True)
 
 # # Create Most Danceability list
-with col8:
+with col10:
     st.subheader("Songs with Most Danceability")
-    danceability_scores = danceability_scores.sort_values('danceability', ascending=False).head(15)
+    danceability_scores = danceability_scores.sort_values('danceability', ascending=False).head(10)
     # danceability_scores = danceability_scores.reset_index(drop=True)
     
     # blank_row = pd.DataFrame({}, columns=most_danceability.columns)
@@ -329,7 +407,8 @@ with col8:
     fig_bar4.update_layout(
         yaxis=dict(autorange="reversed"),
         xaxis_title='Danceability score',
-        yaxis_title='Songs'
+        yaxis_title='Songs',
+        margin=dict(l=10, r=10, t=50, b=130)
     )
 
     st.plotly_chart(fig_bar4, use_container_width=True)
