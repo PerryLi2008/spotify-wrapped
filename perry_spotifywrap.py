@@ -14,10 +14,12 @@ st.set_page_config(layout="wide")
 
 # Set the title of the app
 image_title = Image.open("./images/Title.jpg")
-image_title = image_title.resize((600, 300))
-st.image(image_title, use_column_width=False)
-st.text("")
+st.columns([1,6,2])[1].image(image_title)
 
+# with st.columns([1,6,1])[1]:
+#     st.image(image_title)
+# image_title = image_title.resize((600, 300))
+# st.image(image_title, use_column_width=False)
 # st.title("Spotify Wrapped for Perry")
 # st.write("October 2022 - June 2023")
 
@@ -71,39 +73,39 @@ col1, col2 = st.columns(2)
 
 # Create the first bar chart
 with col1: 
-    st.subheader("Top Artist")
+    st.subheader("Your Favorite Artist")
     top_artist = num_artists_listened.loc[0, 'Artist']
     artist_count = num_artists_listened.loc[0, 'count']
    
     # st.subheader(top_artist)
     
     # Get url of artist's image
-    image1 = Image.open(f"./images/{top_artist}.jpg")
-    # results = spotify.search(top_artist, type='artist')
-    # url = results['artists']['items'][0]['images'][0]['url']
-    # image1 = Image.open(urlopen(url))
+    # image1 = Image.open(f"./images/{top_artist}.jpg")
+    results = spotify.search(top_artist, type='artist')
+    url = results['artists']['items'][0]['images'][0]['url']
+    image1 = Image.open(urlopen(url))
     image1 = image1.resize((300, 300))
     st.image(image1, use_column_width=False)
     st.text(f"Your top artist was \n{top_artist}.")
-    st.text(f"You listened {str(artist_count)} times of his song.")
+    st.text(f"You listened {str(artist_count)} times of his songs.")
     st.text("")
     
 # Create the second bar chart
 with col2: 
-    st.subheader("Top Song")
+    st.subheader("Your Favorite Song")
     top_song = num_songs_listened.loc[0, 'Track']
     song_count = num_songs_listened.loc[0, 'count']
 
     # st.subheader(top_song)
 
     # Get url of album's image
-    image2 = Image.open(f"./images/{top_song}.jpg")
-    # results = spotify.search(top_song, type='track')
-    # url = results['tracks']['items'][0]['album']['images'][0]['url']
-    # image2 = Image.open(urlopen(url))
+    # image2 = Image.open(f"./images/{top_song}.jpg")
+    results = spotify.search(top_song, type='track')
+    url = results['tracks']['items'][0]['album']['images'][0]['url']
+    image2 = Image.open(urlopen(url))
     image2 = image2.resize((300, 300))
     st.image(image2, use_column_width=False)
-    st.text(f"Your top song was {top_song}.\n")
+    st.text(f"Your top song was {top_song}.")
     st.text(f"You played it {str(song_count)} times this year.")
     st.text("")
 
@@ -113,7 +115,7 @@ col3, col4  = st.columns(2)
 
 # Create bar chart for top artists
 with col3: 
-    st.subheader("Top Artists")
+    st.subheader("Top 10 Artists")
     num_artists_listened = num_artists_listened.sort_values('count')
 
     # fig1, ax1 = plt.subplots()
@@ -150,7 +152,7 @@ with col3:
 
 # Create bar chart for most streamed artists
 with col4:
-    st.subheader("Most Streamed Artists")
+    st.subheader("Artists Streamed Most")
     num_artists_streamed = num_artists_streamed.sort_values('minutesPlayed').tail(10)
     num_artists_streamed['minutesPlayed'] = num_artists_streamed['minutesPlayed'].apply(int)
     # num_artists_streamed = num_artists_streamed.head(10)
@@ -185,7 +187,7 @@ col5, col6  = st.columns(2)
 
 # Bar chart for Top songs
 with col5: 
-    st.subheader("Top Songs")
+    st.subheader("Top 10 Songs")
     num_songs_listened = num_songs_listened.sort_values('count')
     num_songs_listened['Track'] = num_songs_listened['Track'].str.slice(0,30)
 
@@ -216,7 +218,7 @@ with col5:
 
 # Bar chart for most streamed songs
 with col6: 
-    st.subheader("Most Streamed Songs")
+    st.subheader("Songs Streamed Most")
     num_songs_streamed = num_songs_streamed.sort_values('minutesPlayed').tail(10)
     num_songs_streamed['minutesPlayed'] = num_songs_streamed['minutesPlayed'].apply(int)
     num_songs_streamed['Track'] = num_songs_streamed['Track'].str.slice(0,30)
@@ -337,7 +339,7 @@ col9, col10  = st.columns(2)
 
 # # Create Top Genres list
 with col9:
-    st.subheader("Top Genres")
+    st.subheader("Top 10 Genres")
     num_genres_listened = num_genres_listened.sort_values('count')
 
     # fig3, ax3 = plt.subplots()
