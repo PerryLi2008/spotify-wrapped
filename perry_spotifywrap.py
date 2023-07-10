@@ -23,6 +23,11 @@ st.columns([1,6,2])[1].image(image_title)
 # st.title("Spotify Wrapped for Perry")
 # st.write("October 2022 - June 2023")
 
+"""
+Prepare data for charts
+
+"""
+
 # Create sample data for the bar charts
 df = pd.read_json('./data/StreamingHistory0 final.json')
 
@@ -68,10 +73,15 @@ for index, row in danceability_scores.iterrows():
 df['datetime'] = pd.to_datetime(df['endTime']).apply(lambda dt: dt - timedelta(hours=4))
 df['Hour'] = df['datetime'].dt.hour
 
-# Plot Top artist and Top Song
+"""
+Start draw multiple charts
+
+"""
+
+# Plot charts for favorite artist and song
 col1, col2 = st.columns(2)
 
-# Create the first bar chart
+# My favorite artist
 with col1: 
     st.subheader("Your Favorite Artist")
     top_artist = num_artists_listened.loc[0, 'Artist']
@@ -90,7 +100,7 @@ with col1:
     st.text(f"You listened {str(artist_count)} times of his songs.")
     st.text("")
     
-# Create the second bar chart
+# My favorite song
 with col2: 
     st.subheader("Your Favorite Song")
     top_song = num_songs_listened.loc[0, 'Track']
@@ -110,7 +120,7 @@ with col2:
     st.text("")
 
 
-# Plot Top artists list and Top songs list
+# Plot charts for Top artists and most streamed artists
 col3, col4  = st.columns(2)
 
 # Create bar chart for top artists
@@ -182,7 +192,7 @@ with col4:
 
     st.plotly_chart(fig_bar1_2, use_container_width=True)
 
-# Plot Top songs and most streamed songs list
+# Plot Top songs and most streamed songs
 col5, col6  = st.columns(2)
 
 # Bar chart for Top songs
@@ -248,10 +258,10 @@ with col6:
 
     st.plotly_chart(fig_bar2_2, use_container_width=True)
 
-# Plot Listening by Time of Day and Track Length Distribution
+# Plot Listening by Time of Day and Track Length of Distribution
 col7, col8  = st.columns(2)
 
-# Create radar chart for Listening by Time of Day
+# Create radar chart for Listening counts by Time of Day
 with col7:
     # Plot count by hour
     num_listens_by_hour = df['Hour'].value_counts().to_frame().reset_index()
@@ -299,7 +309,7 @@ with col7:
     st.subheader("Time of Day Listened")
     st.plotly_chart(fig_radar, use_container_width=True)
 
-# Create bar chart for minutes played
+# Create bar chart to track Length of Distribution
 with col8:
     st.subheader("Track Length Distribution")
     df['minutesPlayed'] = df['msPlayed']/1000/60

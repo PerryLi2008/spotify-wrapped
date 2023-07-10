@@ -3,7 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 # Create sample data for the bar charts
-df = pd.read_json('./data/StreamingHistory0_NEW.json')
+df = pd.read_json('./data/StreamingHistory0.json')
 
 # Connect to Spotify API
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
@@ -54,4 +54,4 @@ def fill_null(x):
 df_final['genre'] = df_final['genre'].apply(fill_null)
 
 # Export data to json file
-df_final.to_json('./data/StreamingHistory0_NEW final.json', orient='records')
+df_final.to_json('./data/StreamingHistory0 final.json', orient='records')

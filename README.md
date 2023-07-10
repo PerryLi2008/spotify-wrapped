@@ -7,8 +7,8 @@ This is great marketing for Spotify. Thousands of people saying the word “Spot
 This project is to create my own version of Spotify Wrapped.  
 The project is implemented in several steps:  
 1. [Request a download dump from Spotify.](https://www.spotify.com/us/account/privacy/) It takes a few days to get dump from Spotify in json format.
-2. Create an interactive dashboard / web application using Streamlit in Python.
-3. Link streamlit app with [Spotify API](https://developer.spotify.com/documentation/web-api) data to obtain genres and audio features endpoint using [Python parckage Spotipy](https://spotipy.readthedocs.io/en/2.22.1/).  
+2. Create an interactive dashboard / web application using Streamlit in Python. See "perry_spotifywrap.py" for detail.
+3. Link streamlit app with [Spotify API](https://developer.spotify.com/documentation/web-api) data to obtain genres and audio features endpoint using [Python parckage Spotipy](https://spotipy.readthedocs.io/en/2.22.1/).  See "Load more Spotify api info.py" for detail.
 ## Streamlit Web app
 [2022 Spotify Wrapped for Perry report can be accessed through this link.](https://spotify-wrapped.streamlit.app/)
 Web page consists of 4 sections:
