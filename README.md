@@ -16,8 +16,7 @@ Web page consists of 4 sections:
 ### Section 2: Top 10 Artists listened and artists streamed most in bar charts.
 ### Section 3: Top 10 Songs listened and songs streamed most in bar charts.
 ### Section 4: Two interactive charts.  
-First one is radar chart, displays how many time user listened to Spotify during time of day.  
-If you hover over any point of brown line, exact time and how many times listened will be displayed.  
+First one is radar chart, displays how many time user listened to Spotify during time of day. If you hover over any point of brown line, exact time and how many times listened will be displayed.  
 Another histogram shows distribution of length of time spend on Spotify. Again, hover over will display details.
 ### Section 4: Top Genres listened and Songs with most Danceability in bar charts.
 Through Spotify API calls, Genres info and Danceability audio features were obtained and added back to json file. Seperate python program was used since it takes quite long time to complete thousands of api queries. 
